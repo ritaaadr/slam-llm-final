@@ -12,7 +12,7 @@ export OMP_NUM_THREADS=1
 # export NCCL_DEBUG_SUBSYS=ALL
 # export TORCH_DISTRIBUTED_DEBUG=INFO
 
-run_dir=/home/annaritadero/slam-llm-working
+run_dir=/home/annaritadero/slam-llm-final
 cd $run_dir
 code_dir=examples/asr_librispeech
 

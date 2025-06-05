@@ -1,0 +1,22 @@
+services:
+  slam-llm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: slam-llm:latest
+    container_name: slam-llm
+    volumes:
+      - .:/workspace/SLAM-LLM
+    environment:
+      - SHELL=/bin/bash
+    working_dir: /workspace/SLAM-LLM
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
