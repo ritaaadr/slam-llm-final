@@ -121,6 +121,7 @@ def setup_encoder(train_config, model_config, **kwargs):
 def setup_llm(train_config, model_config, **kwargs):
     from pkg_resources import packaging
     use_cache = False if train_config.enable_fsdp or train_config.enable_ddp else None
+    device_id = int(os.environ.get("LOCAL_RANK", 0)) if (train_config.enable_fsdp or train_config.enable_ddp) else torch.cuda.current_device()
     if (train_config.enable_fsdp or train_config.enable_ddp) and train_config.low_cpu_fsdp:
         """
         for FSDP, we can save cpu memory by loading pretrained model on rank0 only.
@@ -146,7 +147,8 @@ def setup_llm(train_config, model_config, **kwargs):
                 model = AutoModelForSeq2SeqLM.from_pretrained(
                     model_config.llm_path,
                     load_in_8bit=True if train_config.quantization else None,
-                    device_map="auto" if train_config.quantization else None,
+                    #device_map="auto" if train_config.quantization else None,
+                    device_map={"": device_id} if train_config.quantization else None,
                     use_cache=use_cache,
                 )
             else:
@@ -159,14 +161,16 @@ def setup_llm(train_config, model_config, **kwargs):
                     model = AutoModelForCausalLM.from_pretrained(
                         model_config.llm_path,
                         quantization_config=bnb_config,
-                        device_map="auto",
+                        #device_map="auto", TODO lo tolgo per permettere la parallelizzazione
+                        device_map={"": device_id}, 
                         use_cache=use_cache,
                         trust_remote_code=True,
                     )
                 else:
                     model = AutoModelForCausalLM.from_pretrained(
                         model_config.llm_path,
-                        device_map="auto",
+                        #device_map="auto",
+                        device_map={"": device_id},
                         use_cache=use_cache,
                         trust_remote_code=True,
                     )
@@ -192,7 +196,8 @@ def setup_llm(train_config, model_config, **kwargs):
             model = AutoModelForSeq2SeqLM.from_pretrained(
                 model_config.llm_path,
                 load_in_8bit=True if train_config.quantization else None,
-                device_map="auto" if train_config.quantization else None,
+                #device_map="auto" if train_config.quantization else None,
+                device_map={"": device_id} if train_config.quantization else None,
                 use_cache=use_cache,
             )
         else:
@@ -205,14 +210,16 @@ def setup_llm(train_config, model_config, **kwargs):
                 model = AutoModelForCausalLM.from_pretrained(
                     model_config.llm_path,
                     quantization_config=bnb_config,
-                    device_map="auto",
+                    #device_map="auto",
+                    device_map={"": device_id},
                     use_cache=use_cache,
                     trust_remote_code=True,
                 )
             else:
                 model = AutoModelForCausalLM.from_pretrained(
                     model_config.llm_path,
-                    device_map="auto",
+                    #device_map="auto",
+                     device_map={"": device_id},
                     use_cache=use_cache,
                     trust_remote_code=True,
                 )
