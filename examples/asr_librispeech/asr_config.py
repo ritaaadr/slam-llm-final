@@ -50,7 +50,7 @@ class TrainConfig:
         "help":"alternative: padding"
     }) #
     context_length:int = 4096
-    gradient_accumulation_steps:int = 1
+    gradient_accumulation_steps:int = 2
     num_epochs:int = 3
     num_workers_dataloader:int = 1
     warmup_steps:int = 1000
@@ -86,7 +86,7 @@ class TrainConfig:
     use_gradient_checkpointing:bool = False
     
     early_stopping:bool = True
-    early_stopping_patience:int = 3
+    early_stopping_patience:int = 50
     early_stopping_min_delta:float = 0.001
 
 
