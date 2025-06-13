@@ -42,18 +42,18 @@ hydra.run.dir=$output_dir \
 ++dataset_config.val_data_path=$val_data_path \
 ++dataset_config.input_type=raw \
 ++train_config.model_name=asr \
-++train_config.num_epochs=3 \
+++train_config.num_epochs=10 \
 ++train_config.freeze_encoder=true \
 ++train_config.freeze_llm=true \
 ++train_config.batching_strategy=custom \
-++train_config.context_length=2048 \
+++train_config.context_length=1024 \
 ++train_config.warmup_steps=15 \
 ++train_config.total_steps=600 \
-++train_config.lr=1e-2 \
+++train_config.lr=1e-4 \
 ++train_config.use_gradient_checkpointing=true \
-++train_config.validation_interval=400 \
-++train_config.batch_size_training=3 \
-++train_config.val_batch_size=1 \
+++train_config.validation_interval=100 \
+++train_config.batch_size_training=2 \
+++train_config.val_batch_size=2 \
 ++train_config.num_workers_dataloader=2 \
 ++train_config.low_cpu_fsdp=false \
 ++train_config.quantization=true \
@@ -68,14 +68,23 @@ if [[ $CUDA_VISIBLE_DEVICES != *","* ]]; then
         --config-name "prompt.yaml" \
         $hydra_args
 else
-    CUDA_VISIBLE_DEVICES=0 \
-    python $code_dir/finetune_asr.py \
+    # CUDA_VISIBLE_DEVICES=0 \
+    # python $code_dir/finetune_asr.py \
+    # --config-path "conf" \
+    # --config-name "prompt.yaml" \
+    # ++train_config.enable_fsdp=false \
+    # ++train_config.enable_ddp=false \
+    # ++train_config.use_fp16=true \
+    # ++train_config.one_gpu=true \
+    # $hydra_args
+    torchrun --nproc_per_node=2 --master_port=12345 $code_dir/finetune_asr.py \
     --config-path "conf" \
     --config-name "prompt.yaml" \
-    ++train_config.enable_fsdp=false \
-    ++train_config.enable_ddp=false \
+    ++train_config.enable_ddp=true \
+    ++train_config.one_gpu=false \
     ++train_config.use_fp16=true \
-    ++train_config.one_gpu=true \
+    ++train_config.enable_fsdp=false \
     $hydra_args
+
 
 fi
