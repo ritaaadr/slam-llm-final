@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   slam-llm:
     build:
@@ -9,14 +11,19 @@ services:
       - .:/workspace/SLAM-LLM
     environment:
       - SHELL=/bin/bash
+      - NVIDIA_VISIBLE_DEVICES=all
     working_dir: /workspace/SLAM-LLM
     stdin_open: true
     tty: true
-    command: /bin/bash
+    shm_size: 16g            # Increase shared memory for PyTorch
+    #user: "${UID}:${GID}"    # Run as your local user
     deploy:
       resources:
+        limits:
+          memory: 24g        # Limit container memory to 24 GB
         reservations:
           devices:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+    command: /bin/bash
