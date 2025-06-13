@@ -7,6 +7,10 @@ from dataclasses import dataclass, field
 from omegaconf import DictConfig, ListConfig, OmegaConf
 from asr_config import ModelConfig, TrainConfig, DataConfig, LogConfig, FSDPConfig
 
+import torch
+print(f"[INFO] Using {torch.cuda.device_count()} GPUs")
+
+
 @dataclass
 class RunConfig:
     dataset_config: DataConfig = field(default_factory=DataConfig)
