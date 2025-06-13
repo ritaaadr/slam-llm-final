@@ -104,7 +104,7 @@ def train(model, train_dataloader,eval_dataloader, tokenizer, optimizer, lr_sche
     #=================Early stopping=====================================
     patience_counter = 0
     min_delta = getattr(train_config, "early_stopping_min_delta", 0.0)
-    patience = getattr(train_config, "early_stopping_patience", 3)
+    patience = getattr(train_config, "early_stopping_patience", 50)
     #=====================================================================
 
     # === Training encoder projector ======================================================
@@ -121,7 +121,8 @@ def train(model, train_dataloader,eval_dataloader, tokenizer, optimizer, lr_sche
         #with MemoryTrace() as memtrace, Join([model, optimizer]):
         #HO MESSO:
         if train_config.enable_fsdp or train_config.enable_ddp:
-            join_context = Join([model, optimizer])
+            #join_context = Join([model, optimizer]) tolgo questo per aggiungere codice multigpu friendly
+            join_context = Join([model])
         else:
             join_context = nullcontext()
         with MemoryTrace() as memtrace, join_context: # track the memory usage
